@@ -1,0 +1,56 @@
+plugins {
+    id "groovy"
+    id "com.github.johnrengelman.shadow" version "6.0.0"
+    id "io.micronaut.application" version '1.0.3'
+}
+
+version "0.1"
+group "br.com.zgsolucoes.devfest.sorteio"
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        name = 'GitHubPackages'
+        url = uri('https://maven.pkg.github.com/jpozorio/zg-devfest-micronaut-avisa-vencedor')
+        credentials {
+            username = project.findProperty('gpr.user') ?: System.getenv('GPR_USER')
+            password = project.findProperty('gpr.key') ?: System.getenv('GPR_KEY')
+        }
+    }
+}
+
+micronaut {
+    testRuntime "spock2"
+    processing {
+        incremental true
+        annotations "br.com.zgsolucoes.devfest.sorteio.*"
+    }
+}
+
+dependencies {
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut.groovy:micronaut-runtime-groovy")
+    implementation("javax.annotation:javax.annotation-api")
+    implementation("io.micronaut.aws:micronaut-function-aws")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-function")
+    testImplementation("io.micronaut:micronaut-http-client")
+
+    //custom dependencies
+    //lidar com eventos da lambda aws
+    implementation("com.amazonaws:aws-lambda-java-events:3.3.0")
+
+    //sorter vencedor e enviar por email
+    compile 'br.com.zgsolucoes.devfest:zg-devfest-micronaut-avisa-vencedor:1.1.0'
+}
+
+mainClassName = "com.example.BookLambdaRuntime"
+java {
+    sourceCompatibility = JavaVersion.toVersion('11')
+    targetCompatibility = JavaVersion.toVersion('11')
+}
+
+
+
+
